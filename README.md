@@ -1,5 +1,5 @@
 # DB.js
-A tiny (5.8K) MVVM framework
+A tiny (5.8K) MVVM framework.
 
 See partial documentation on http://db.leanws.com
 
