@@ -1,0 +1,4 @@
+* 2022-08-15
+Fixed Chrome issues:
+- My Chromium does not understand new operators "?." and "??". Replaced them with good old syntax.
+- Added =top.DB=DB;= at the end; otherwise Chrome does not recognize =DB= as a global variable.
