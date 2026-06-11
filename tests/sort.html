@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sorting observable arrays</title>
+    <style>
+     .red{color:red}
+     #contents>a{margin:1ex}
+     span{margin:1ex; font-size:130%; width:1.3em; border:solid 1px red}
+     .link{color:blue;cursor:pointer}
+     td{border:solid 1px green}
+     .zoneList>div{display:inline-block;margin-right:1ex;margin-bottom:1ex;border:1px solid grey;border-radius:7px;padding:.5ex;cursor:pointer}
+    </style>
+  </head>
+  <body>
+    <div id="message" class="clear" style="background-color:rgba(0,0,0,.5)">You need to enable JavaScript to run this website.</div>
+    <script>document.getElementById('message').style.display='none';var localScripts=["files/sort.js"];</script>
+    <script async src="/common/0.js"></script>
+    <p id="contents" db="forEach:allPages"><a db="attr:href:addr,text:addr"></a></p>
+
+    <h1>Sorting observable arrays</h1>
+    <p>An ordered array of numbers:</p>
+    <p db="forEach:simpleArrayA"><span db="text:v"></span></p>
+
+    <h2>Inserting new element</h2>
+    <p class="link" onclick="pushNewElement()">simpleArrayA.push(<span db="text:newElement"></span>)</p>
+
+    <h2>Replacing all elements</h2>
+    <button onclick="replaceArrayElements()">Replace!</button>
+
+    <h2>Switching between different sorting functions</h2>
+    <button onclick="switchSortFunction()">This button</button>
+    <p>switches between ways of sorting:</p>
+    <ul>
+      <li>(x,y)=>x.v-y.v (according to values) and</li>
+      <li>(x,y)=>x.v*x.v-y.v*y.v (according to absolute values)</li>
+    </ul>
+
+    <h1>Dynamically changing sorting functions</h1>
+    <p>availableDNs=new DB.observable([selectedSorting],{type:'oarray',value:[],sort:()=>sorters[selectedSorting()]})</p>
+    <p>←(dynamic) sort – is similar to <b>compute</b>; it is a function (with no arguments) returning the sorting function.</p>
+    <h2>A real-life example</h2>
+    <p>Sort domain zones by <select id="sortBy" db="value:selectedSorting"><option value="sortByName">name</option><option value="sortByPrice">price</option></select></p>
+
+    <div class="zoneList" db="forEach:selectedDomZones"><div db="onClick:removeZone"><span db="text:nameV"></span><span db="text:printedPrice"></span></div></div>
+
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+var sorters=[(x,y)=>x.v>y.v?1:-1, (x,y)=>x.v*x.v>y.v*y.v?1:-1],
+    sIndex=0,
+    simpleArrayA=new DB.observable([],{
+	type:'oarray',
+	value:[{v:0},{v:-100},{v:200},{v:-300},{v:400}],
+	sort:()=>sorters[sIndex]});
+
+var newElement=new DB.observable([],{type:'int',value:100});
+
+function pushNewElement(){
+    simpleArrayA.push({v:newElement()});
+    newElement(Math.round(simpleArrayA().map(x=>x.v).reduce((x,y)=>x+y,0)/simpleArrayA.l()*2*(Math.random()-.5)))
+}
+
+function switchSortFunction(){
+    sIndex=1-sIndex;
+    simpleArrayA.sort(()=>sorters[sIndex])
+}
+
+function replaceArrayElements(){
+    var newArrayValues=[1,2,3,4,5].map(function(){return {v:Math.round(200*(Math.random()-.5))}});
+    simpleArrayA(newArrayValues)
+}
+// ============
+// Sorting domains in 2 different ways →
+var DZdata=[["click",1519],["ga",1524],["bharat",1580],["nl",1585],["link",1585],["name",1707],["tokyo",1731],["casa",1731],["xyz",1743],["rocks",1817],["futbol",1824],["monster",1885],["org",1890],["page",1946],["net",1951],["asia",2048],["club",2073],["art",2073],["ca",2134],["cl",2134],["tel",2195],["nz",2219],["observer",2251],["dev",2312],["at",2366],["ru",853],["be",1097],["tk",1097],["top",1341],["eu",1219],["fr",1219],["li",1341],["icu",1219],["company",1243],["yt",1463],["business",1243],["de",1280],["es",1341],["uk",1341],["vg",1377],["ro",1341],["pm",1341],["it",1341],["ch",1341],["us",1414],["re",1463],["com",1463],["work",1414],["cz",1536],["one",1499],["nagoya",1731],["pictures",1658],["in",1463],["tf",1463],["wf",1463],["wang",1499],["moscow",1536],["okinawa",2390],["ryukyu",2390],["yokohama",2390],["beauty",2390],["hair",2390],["quest",2390],["skin",2390],["makeup",2390]],
+    selectedSorting=new DB.observable([],{type:'str',value:"sortByName"}),
+    DZsorters={sortByName:(x,y)=>x.nameV>y.nameV?1:-1,sortByPrice:(x,y)=>x.priceV>y.priceV?1:-1},
+    selectedDomZones=new DB.observable([selectedSorting],{
+	type:'oarray',
+	value:DZdata.map(function(x){return{nameV:x[0],priceV:x[1],printedPrice:'$'+(x[1]/100).toFixed(2)}}),
+	sort:()=>DZsorters[selectedSorting()]});
+// ============
+   DB.scanHTML();
+  </script>
+</html>

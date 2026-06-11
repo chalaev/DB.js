@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Write</title>
+    <style>
+     span{margin:1ex; font-size:130%; width:1.3em; border:solid 1px red}
+     .link:hover{cursor:pointer}
+     td{border:solid 1px green}
+     a{margin:1ex}
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>self-correcting input</h1>
+      <p>The following input field allows only small letters and numbers:</p>
+      <input db="value:myInputField">
+    </div>
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+function validateInputField(fName){
+    return fName.toLowerCase().replace(/[^a-z0-9]/g, '')}
+
+var myInputField=new DB.observable([],{'value':'','write':(yy,xx)=>myInputField(validateInputField(xx))});
+
+DB.scanHTML();
+  </script>
+</html>

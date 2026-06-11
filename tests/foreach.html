@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Testing forEach binding</title>
+    <style>
+     span{margin:1ex; font-size:130%; width:1.3em; border:solid 1px red}
+     .link:hover{cursor:pointer}
+     td{border:solid 1px green}
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>forEach binding for arrays of constant size</h1>
+      <h2>Simple (one-time) forEach</h2>
+      <p>One can apply forEach both to an observable array and to a usual (non-observable) array:</p>
+      <p db="forEach:simpleArrayA"><span db="text:vv"></span></p>
+      <p>← must display 0 1 2 3 4</p>
+
+      <p>Similarly, the following line must be a sequence of letters:</p>
+      <p db="forEach:simpleArrayB"><span db="text:vv"></span></p>
+
+      <h3>When dealing with observable array, index (position) of an element will be supplied to functions reacting on events (for example, onClick).</h3>
+      <p>Let us repeat numerical sequence above this time using observable array:</p>
+      <p>(Click and see messages in the debug console.)</p>
+      <p db="forEach:obsArray"><span class="link" db="text:vv,onClick:clickMe"></span></p>
+      <p>← The last element was added using <b>push</b> method.
+	See the HTML source. the first arguiment of <b>clickMe</b> is an event containng pointer (mouse) coordinates.</p>
+
+      <h2>Nested forEach</h2>
+      <h3>A table cell below is bound to a non-observable:</h3>
+      <table>
+	<tbody db="forEach:tableBody1">
+	  <tr db="forEach:tableLine"><td db="text:kkk"></td></tr>
+	</tbody>
+      </table>
+
+      <h3>When a table cell below is bound to an observable</h3>
+      <p>(Click and see messages in the debug console.)</p>
+      <table>
+	<tbody db="forEach:tableBody2">
+	  <tr db="attr:id:rowNumber,forEach:tableLine"><td class="link" db="text:kkk,onClick:clickMe"></td></tr>
+	</tbody>
+      </table>
+      <p>In case of double (nested) <b>forEach</b>, the function <b>clickMe</b> receives only one index: column number.
+	So how can we know the line number?</p>
+      <p>– by marking the rows of the table with the function <b>rowNumber</b>. So when we click a table cell, we can get the <b>id</b> of a line from
+	<b>clickEvent.target.parentNode.id</b>:
+      <table>
+	<tbody>
+	  <tr><td>Mouse X=</td><td id="mouseX"></td></tr>
+	  <tr><td>Mouse Y=</td><td id="mouseY"></td></tr>
+	  <tr><td>Table row=</td><td id="tabRow"></td></tr>
+	  <tr><td>Column number=</td><td id="colNumber"></td></tr>
+	</tbody>
+      </table>
+      </p>
+
+
+      <p>An alternative way: <b>Array.from(element.parentNode.children).indexOf(element)</b> ← but it is probably taking more time.</p>
+
+      <hr>
+      <h1>forEach for arrays with dynamically changing number of elements</h1>
+      <p>Here is a toy example (a real-life code is <b>server/frontend/wiki-config.js</b>):
+	The number of links to a website depends on the number of dots in the domain name (domain level), as well as on
+	the fact if the domain name is a part of an array:</p>
+      <p db="forEach:LwSdomains"><span db="text:addr"></span></p>
+      <p>← note that <b>forEach</b> works also without observables.</p>
+
+      <p>Dear customer, your website <input db="value:domainName"> is bound to the following links:</p>
+      <p db="forEach:domainAddresses"><span db="text:addr"></span></p>
+      <p>←And now check how this list will change if we update the domain name so that it is no more contained in the LwS-array. For example, add an extra letter to the domain name to see the effect.</p>
+    </div>
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+   function collectF(fun,Ntimes=0){// ← collectF(x=>x*x,3) ⇒ [0,1,4]
+       var res=[];
+       for(let i=0;i<Ntimes;i++) res.push(fun(i));
+       return res}
+
+   var simpleArrayA=[{'vv':0},{'vv':1},{'vv':2},{'vv':3},{'vv':4}],
+       simpleArrayB=[{'vv':'a'},{'vv':'b'},{'vv':'c'},{'vv':'d'},{'vv':'e'}];
+
+   var clickEvent;
+
+   function OAelement(initData){
+       var self=this;
+       self.vv=new DB.observable([],{'type':'int','value':initData});
+       self.clickMe=function(){
+	   console.debug("self.click received " + arguments.length + " arguments");
+	   clickEvent=arguments[0];
+	   console.debug("first argument is event object");
+	   console.debug("mouse coordinates= ("+arguments[0].clientX+","+arguments[0].clientY+")");
+	   console.debug("second argument is index = " + arguments[1])}}
+
+   var obsArray=new DB.observable([],{'type':'oarray','value':collectF(xx=>new OAelement(xx),5)});
+
+   obsArray.push(new OAelement(9)); // ← with observables one can use push method
+
+   //=================  nested ForEach
+   // table lines will be provided by another array (similar to obsArray)
+   var counter=0;
+
+   function makeRow1(){
+       var self=this;
+       self.tableLine=new DB.observable([],{'type':'int','value':collectF(function(){return {'kkk':counter++}},6)})}
+
+   var tableBody1=new DB.observable([],{'type':'oarray','value': collectF(xx=>new makeRow1(xx),3)});
+
+   // ← the elements of these arrays were not observables.
+   // Next, we implement similar table where every element is an observable:
+
+   counter=0;
+
+   function tableCell(initData){
+       var self=this;
+       self.kkk=new DB.observable([],{'type':'int','value':initData});
+       self.clickMe=function(){
+	   console.debug("self.click received " + arguments.length + " arguments");
+	   clickEvent=arguments[0];
+	   console.debug("mouse coordinates= ("+arguments[0].clientX+","+arguments[0].clientY+")");
+	   document.getElementById('mouseX').textContent=arguments[0].clientX;
+	   document.getElementById('mouseY').textContent=arguments[0].clientY;
+	   console.debug("table row = "+arguments[0].target.parentNode.id);
+	   document.getElementById('tabRow').textContent=arguments[0].target.parentNode.id;
+	   console.debug("column number = " + arguments[1]);
+	   document.getElementById('colNumber').textContent=arguments[1]}}
+
+   function makeRow2(RN){
+       var self=this;
+       self.rowNumber="row"+RN;
+       self.tableLine=new DB.observable([],{'type':'int','value':collectF(()=>new tableCell(counter++),6)})}
+
+   var tableBody2=new DB.observable([],{'type':'oarray','value': collectF(ii=>new makeRow2(ii),3)});
+
+   function webSiteObj(addr){var self=this; self.addr=addr}
+
+   var LwSdomains=[{addr:"chalaev.com"},{addr:"leanws.com"},{addr:"leanweb.solutions"}],
+       LwSdomainList=LwSdomains.map(x=>x.addr),
+       domainName=new DB.observable([],{type:'str',value:"chalaev.com"}),
+       domainAddresses=new DB.observable([domainName],{type:'oarray',compute:()=>{
+	   var theDomainName=domainName(),alwaysPresent=['http://'+theDomainName,'https://'+theDomainName];
+				   if(theDomainName.match(/\./g).length==1){
+	       alwaysPresent.push('http://www.'+theDomainName);
+	       if(-1!=LwSdomainList.indexOf(theDomainName))
+		   alwaysPresent.push('https://www.'+theDomainName)}
+	   return alwaysPresent.map(x=>new webSiteObj(x))}});
+
+   DB.scanHTML();
+  </script>
+</html>

@@ -1,0 +1,19 @@
+#+STARTUP: overview
+#+TITLE:  DB.js
+#+AUTHOR: Oleg Shalaev
+#+EMAIL:  oleg@chalaev.com
+
+A tiny (5.8K) MVVM framework.
+
+See partial documentation on http://db.leanws.com
+
+* Testing
+For testing, one needs =firefox= and =marionette= (=libfirefox-marionette-perl= package on Debian):
+#+begin_src shell
+make -f test.mk
+#+end_src
+
+If marionette library reports errors, patch it:
+#+begin_src shell
+patch /usr/share/perl5/Firefox/Marionette.pm marionette.diff
+#+end_src

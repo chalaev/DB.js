@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DB.js tests / simplest example</title>
+    <style>
+     #contents>a{margin:1ex}
+     span{margin:1ex; font-size:130%; width:1.3em; border:solid 1px red}
+     .link:hover{cursor:pointer}
+     td{border:solid 1px green}
+    </style>
+  </head>
+  <body>
+    <h1>Example: weight of a couple</h1>
+    <p>
+      <label>Husband's weight= <input type="number" db="value:husbandWeight"> </label><br>
+      <label>Wife's weight= <input type="number" db="value:wifeWeight"> </label>
+    </p>
+
+    <p>Every time we change the above 2 input values, the resulting couple weight is recalculated:</p>
+    <p>Total weight= <span db="text:coupleWeight"></span>.</p>
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+   var husbandWeight=new DB.observable([],{type:'int',value:220}),
+       wifeWeight=new DB.observable([],{type:'int',value:160}),
+       coupleWeight=new DB.observable([husbandWeight,wifeWeight],
+				      {type:'int', compute:()=>husbandWeight()+wifeWeight()});
+
+   DB.scanHTML();
+  </script>
+</html>

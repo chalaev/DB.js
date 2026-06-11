@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DB.js tests / dynamic classes</title>
+    <style> .red{color:red} </style>
+  </head>
+  <body>
+    <script>document.getElementById('message').style.display='none';var localScripts=["files/class.js"];</script>
+    <h1>Dynamically changing class</h1>
+    <div>
+      <p>For example, there is a <span db="class:red">span-element becoming red when it gains the <b>red</b> class</span>.</p>
+      <p>The class is switched on and off by <button onclick="toggleRed()">this button</button></p>
+    </div>
+    <h1>Dynamically controlling visibility of an object</h1>
+    <p>Using a table  (from <a href="foreach">another test</a>) as an example: the table (dis)appears when clicking
+      <button onclick="toggleVisibility()">this button:</button></p>
+    <table db="visible:tableVisibility">
+      <tbody><tr><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr><tr><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td></tr></tbody>
+    </table>
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+var red=new DB.observable([],{type:'bool',value:false});
+var tableVisibility=new DB.observable([],{type:'bool',value:true});
+
+function toggleRed(){red(!red())}
+
+function toggleVisibility(){tableVisibility(!tableVisibility())}
+
+DB.scanHTML();
+  </script>
+</html>

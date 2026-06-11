@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Compute</title>
+  </head>
+  <body>
+    <h1>compute subtleties</h1>
+    <h2>If the <b>initial value is specified</b> at the definition of an observable, its <b>compute</b> method is NOT called during the initialization.</h2>
+    <p>It will be <i>automatically</i> called only when the values other (observables) are changed -- those on which it depends.
+      In order to force the recalculation of an observable, one should use <b>variableName.DB.update()</b></p>
+    <div>
+      <label>uno=<input type="text" db="value:uno"></label>
+      <p>due=<span style="font-weight:bold" db="text:due"></span> ←
+	right after the web page is loaded, here must be the (initially defined) value <b>zzz</b>,
+	and only later, after we update <b>uno</b>,
+	it should change into the value of <b>uno</b>
+	repeated twice.</p>
+    </div>
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+   var uno=new DB.observable([],{type:'str',value:'ku-ku'}),
+       due=new DB.observable([uno],{type:'str',value:'zzz',compute:()=>uno()+' '+uno()});
+   DB.scanHTML();
+  </script>
+</html>

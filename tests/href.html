@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>An attr:href binding</title>
+  </head>
+  <body>
+    <h1>An attr:href binding</h1>
+    <p>This test makes sure that the code from <a href="https://db.leanws.com/href">this demo</a> works.</p>
+
+    <h2>Example 1</h2>
+    <p><a db="attr:href:addr1">Link to the paintings depicted during the specified year.</a></p>
+
+    <h2>Example 2</h2>
+    <p><a db="attr:href:addr2">Link to the paintings created in <span db="text:year2"></span></a></p>
+
+    <label>Choose the year:
+      <input type="number" min="2005" max="2015" db="value:year2">
+    </label>
+    
+  </body>
+  <script src="file:///tmp/DB/DB.js"></script>
+  <script>
+   var addr1=new DB.observable([],{type:"str", value:"http://www.great-artist.com/gallery/2010/"});
+   // ========
+   var year2=new DB.observable([],{type:"int",value:2011}),
+       addr2=new DB.observable([year2],{type:"str", compute:()=>"http://www.great-artist.com/gallery/"+year2()+"/"});
+   // ========
+   DB.scanHTML();
+  </script>
+</html>
