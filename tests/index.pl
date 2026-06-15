@@ -12,7 +12,7 @@ use Firefox::Marionette::Display();
 use Firefox::Marionette::Keys qw(:all);
 use Time::HiRes qw(usleep);
 
-my $firefox = Firefox::Marionette->new(sleep_time_in_ms => 100);
+my $firefox = Firefox::Marionette->new(sleep_time_in_ms => 100); # ,visible => 1
 
 my $webPage='index';
 

@@ -14,11 +14,11 @@
       <h1>forEach binding for arrays of constant size</h1>
       <h2>Simple (one-time) forEach</h2>
       <p>One can apply forEach both to an observable array and to a usual (non-observable) array:</p>
-      <p db="forEach:simpleArrayA"><span db="text:vv"></span></p>
+      <p db="forEach:simpleArrayA"><span db="text:valueOf"></span></p>
       <p>← must display 0 1 2 3 4</p>
 
       <p>Similarly, the following line must be a sequence of letters:</p>
-      <p db="forEach:simpleArrayB"><span db="text:vv"></span></p>
+      <p db="forEach:simpleArrayB"><span db="text:valueOf"></span></p>
 
       <h3>When dealing with observable array, index (position) of an element will be supplied to functions reacting on events (for example, onClick).</h3>
       <p>Let us repeat numerical sequence above this time using observable array:</p>
@@ -31,7 +31,7 @@
       <h3>A table cell below is bound to a non-observable:</h3>
       <table>
 	<tbody db="forEach:tableBody1">
-	  <tr db="forEach:tableLine"><td db="text:kkk"></td></tr>
+	  <tr db="forEach:tableLine"><td db="text:k"></td></tr>
 	</tbody>
       </table>
 
@@ -39,7 +39,7 @@
       <p>(Click and see messages in the debug console.)</p>
       <table>
 	<tbody db="forEach:tableBody2">
-	  <tr db="attr:id:rowNumber,forEach:tableLine"><td class="link" db="text:kkk,onClick:clickMe"></td></tr>
+	  <tr db="attr:id:rowNumber,forEach:tableLine"><td class="link" db="text:k,onClick:clickMe"></td></tr>
 	</tbody>
       </table>
       <p>In case of double (nested) <b>forEach</b>, the function <b>clickMe</b> receives only one index: column number.
@@ -79,8 +79,8 @@
        for(let i=0;i<Ntimes;i++) res.push(fun(i));
        return res}
 
-   var simpleArrayA=[{'vv':0},{'vv':1},{'vv':2},{'vv':3},{'vv':4}],
-       simpleArrayB=[{'vv':'a'},{'vv':'b'},{'vv':'c'},{'vv':'d'},{'vv':'e'}];
+   var simpleArrayA=[0,1,2,3,4],
+       simpleArrayB=['a','b','c','d','e'];
 
    var clickEvent;
 
@@ -104,7 +104,7 @@
 
    function makeRow1(){
        var self=this;
-       self.tableLine=new DB.observable([],{'type':'int','value':collectF(function(){return {'kkk':counter++}},6)})}
+       self.tableLine=new DB.observable([],{'type':'int','value':collectF(function(){return {'k':counter++}},6)})}
 
    var tableBody1=new DB.observable([],{'type':'oarray','value': collectF(xx=>new makeRow1(xx),3)});
 
@@ -115,7 +115,7 @@
 
    function tableCell(initData){
        var self=this;
-       self.kkk=new DB.observable([],{'type':'int','value':initData});
+       self.k=new DB.observable([],{'type':'int','value':initData});
        self.clickMe=function(){
 	   console.debug("self.click received " + arguments.length + " arguments");
 	   clickEvent=arguments[0];

@@ -3,9 +3,9 @@
 #+AUTHOR: Oleg Shalaev
 #+EMAIL:  oleg@chalaev.com
 
-A tiny (5.8K) MVVM framework.
+A tiny (6K) MVVM framework.
 
-See partial documentation on http://db.leanws.com
+See partial documentation on http://db.chalaev.com
 
 * Testing
 For testing, one needs =firefox= and =marionette= (=libfirefox-marionette-perl= package on Debian):

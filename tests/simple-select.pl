@@ -14,7 +14,7 @@ use Time::HiRes qw(usleep);
 
 my $firefox = Firefox::Marionette->new(sleep_time_in_ms => 100); # ,visible => 1
 
-my $webPage='class';
+my $webPage='simple-select';
 
 $firefox->go('file:///tmp/DB/' . $webPage . '.html');
 $firefox->await(sub{$firefox->uri =~ m/$webPage/});
@@ -23,14 +23,15 @@ sub tagObj{
 my $xpath=shift(@_);
 return $firefox->await(sub {$firefox->find($xpath)})}
 
-my $redSpanPath='/html/body/div/p[1]';
-my $tablePath='/html/body/table';
+my $selectTag=tagObj('/html/body/article/p[1]/select');
 
-tagObj($redSpanPath)->has_class('red') && die "test 1 failed!";
-$firefox->percentage_visible(tagObj($tablePath))>0 || die "test 2 failed!";
+$selectTag->property('value') eq 'coffee' || die "test 1 failed";
+tagObj('/html/body/article/p[2]/input')->property('value') eq 'lemonade' || die "test 2 failed";
+tagObj('/html/body/article/p[2]/button')->click();
+$selectTag->property('value') eq 'coffee' || die "test 3 failed";
 
-tagObj('/html/body/div/p[2]/button')->click();
-tagObj($redSpanPath)->has_class('red') || die "test 3 failed!";
+foreach my $option ($selectTag->find_tag('option')){
+    if ($option->property('value') eq 'water') {
+        $option->click()}}
 
-tagObj('/html/body/p/button')->click();
-$firefox->percentage_visible(tagObj($tablePath))==0 || die "test 4 failed!";
+$selectTag->property('value') eq 'water' || die "test 4 failed";

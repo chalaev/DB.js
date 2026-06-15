@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>array of select tags controlled by textarea </title>
+      <meta name="description" content="">
+      <meta name="author" content="builder.leanws.com">
+      <meta name="keywords" content="">
+      <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0">
+      <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+      <style>
+       #contents>a{margin:1ex}
+       .hidden{display:none}
+       textarea{width:70%;height:8em}
+      </style>
+  <body>
+    <noscript><div id="message" class="clear" style="background-color:rgb(248, 240, 169);">You need to enable JavaScript to run this web page.</div>  </noscript>
+    <h1>Advanced usage: array of select tags controlled by textarea</h1>
+    <p>(Press F12 to see the code.)</p>
+
+    <article>
+  <h2>DNS records</h2>
+  <p>This is how DNS records are configured at <a href="https://leanws.com">LwS</a>: a customer may have some domain names registered with <a href="https://leanws.com">LwS</a>, and others registered elsewhere.</p>
+  <p>The texarea and and the table below control the DNS records.</p>
+    </article>
+
+<article>
+  <h2>textarea</h2>
+  <p>The textarea contains &quot;external&quot; domain names registered by the customer (with another service):</p>
+<textarea maxlength="100" placeholder="list of external domain names" db="value:extDomNames"></textarea>
+<p>← It is connected with the (observable) variable <code>extDomNames</code>.</p>
+<p>User input to the <code>textarea</code> is automatically corrected.</p>
+</article>
+
+<article>
+  <h2>Dynamically updated table</h2>
+  <p>The following information is provided by the server:</p>
+  <ul>
+    <li>the customer has registered domain name <code>chalaev.com</code> with <a href="https://leanws.com">LwS</a>, but does not use it.</li>
+    <li>he uses 2 domain names for his website: <code>customer-domain.com</code> and <code>another.domain.net</code> (both registered elsewhere).</li>
+  </ul>
+<p>The table controls DNS records for the domain names specified by the user. It is dynamically updated both by its direct updates and by the updates of the text area:</p>
+<table>
+  <thead><tr><th>optional prefix</th><th>domain name*</th><th>active</th></tr></thead>
+  <tbody db="forEach:domainTableRows">
+    <tr>
+      <td><input type="text" db="value:thirdLevelPrefix">.</td>
+      <td><select db="forEach:DNselectOptions:text,value:chosenDN"> <option db="text:secLevDN"></option></select></td>
+      <td><input type="checkbox" db="checked:isActive"></td>
+    </tr>
+  </tbody>
+</table>
+</article>
+
+<article>
+  <h2>Examine the code</h2>
+  <p>Examine the table behavior by updating the table and the text area.</p>
+</article>
+
+  </body>
+
+  <script src="file:///tmp/DB/DB.js"></script>
+
+  <script>
+   var leanWebDNs=["chalaev.com"], assignedDNs=["customer-domain.com","another.domain.net"], // ← provided by the server
+       isAsecondLevelDN = x=>x.toUpperCase().match(/^[^!@#$%^&*\.,]{2,20}\.[A-Z]{2,20}$/),
+       secondLevelExtDNs=[...new Set(assignedDNs.map(x=>isAsecondLevelDN(x)? x : x.split(/^[^\.]+./)[1]).filter(x => !leanWebDNs.includes(x)))],
+       extDomNames,commonSelectOptions,DNselectOptions,DNtableLine,updateDomainChoices,domainTableRows,NofInactiveRows;
+
+   function onLoad(){
+       extDomNames=new DB.observable([],{
+	   value:secondLevelExtDNs.sort().join(' '),// ← initial value on page load
+	   write:function(oldValue,inputExtDNlist){
+	       let listOfDomains=inputExtDNlist.split(/[ ,\r\n]/)
+					       .filter(isAsecondLevelDN)
+					       .filter(x=>x.match(/^[ -~]+$/)); // only ASCII symbols allowed
+	       return extDomNames([...new Set(listOfDomains)].sort().join(' '))}});
+
+       commonSelectOptions=new DB.observable([extDomNames],{
+	   type:'oarray',
+	   compute:()=>leanWebDNs.concat(extDomNames().split(' ')).map(function(x){return {secLevDN:x}})});
+
+       // class defining table rows →
+       DNtableLine=function(thirdLevelPrefix, chosenDN, isActive){
+	   var myself=this;
+	   myself.DNselectOptions=new DB.observable([commonSelectOptions],{type:'oarray',compute:()=>commonSelectOptions()});
+	   // ← (due to limitations/bugs of DB.js) DNselectOptions has to be INSIDE the
+	   // table-row object despite that it is the same for all rows
+	   myself.thirdLevelPrefix=new DB.observable([],{value:thirdLevelPrefix});
+	   myself.isActive=new DB.observable([],{type:'bool',value:isActive});// checkBox
+	   myself.chosenDN=new DB.observable([],{value:chosenDN,
+						 write:function(oldValue,newValue){
+						     myself.thirdLevelPrefix('');
+						     myself.isActive(false);
+						     return newValue}})};
+
+       domainTableRows=new DB.observable([commonSelectOptions],
+{type:'oarray',
+   value:assignedDNs.map(function(assignedDomanName){
+       let prefix=isAsecondLevelDN(assignedDomanName)? '' : assignedDomanName.split('.',1)[0],
+	   domainName=isAsecondLevelDN(assignedDomanName)? assignedDomanName : assignedDomanName.split(/^[^\.]+./)[1];
+       console.debug('prefix= '+prefix);
+       console.debug('domainName= '+domainName);
+       return new DNtableLine(prefix,domainName,true)})});
+
+       domainTableRows.push(new DNtableLine('',extDomNames().split(' ')[0],false));
+
+       NofInactiveRows=new DB.observable(
+	   [DB.everyElement(domainTableRows,'isActive')],
+	   {type:'int',compute:()=>domainTableRows().map(x=>x.isActive()? 0:1).reduce((x,y)=>x+y,0)});
+
+       let newTableRow=new DB.observable([NofInactiveRows],{
+	   type:'bool',// we add or erase table rows to make sure NofInactiveRows() is always 1
+	   compute:function(){
+	       let i=NofInactiveRows();
+	       if(i>1) domainTableRows.drop(domainTableRows().map(x=>x.isActive()).indexOf(false));// removing extra elements
+	       else if(i==0) domainTableRows.push(new DNtableLine('',extDomNames().split(' ')[0],false));
+	       return true}});// ← returned value does not matter
+
+       let avoidIdenticalActiveRows=new DB.observable(// this observable makes sure there are no active duplicate DNS records
+[DB.everyElement(domainTableRows,'thirdLevelPrefix'),DB.everyElement(domainTableRows,'chosenDN'),DB.everyElement(domainTableRows,'isActive')],
+{type:'int',compute:function(){
+    let activeRows=domainTableRows().filter(x=>x.isActive()),
+        signature=x=> x.thirdLevelPrefix() + '.' + x.chosenDN(),
+        ARsigs=activeRows.map(signature);
+    for(let i=1;i<activeRows.length;i++){
+        if(ARsigs.slice(i).includes(ARsigs[i-1])){
+  	    domainTableRows.drop(i-1);
+  	    break}} return 0}});// ← value does not matter
+
+       DB.scanHTML()}
+   onLoad();
+  </script>
+</html>

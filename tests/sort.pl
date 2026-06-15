@@ -12,7 +12,7 @@ use Firefox::Marionette::Display();
 use Firefox::Marionette::Keys qw(:all);
 use Time::HiRes qw(usleep);
 
-my $firefox = Firefox::Marionette->new(sleep_time_in_ms => 100);
+my $firefox = Firefox::Marionette->new(sleep_time_in_ms => 100); # ,visible => 1
 
 my $webPage='sort';
 
@@ -23,13 +23,13 @@ sub tagObj{
 my $xpath=shift(@_);
 return $firefox->await(sub {$firefox->find($xpath)})}
 
-sub manySymbols{
+sub allChildren{
 my ($xpath, $tag) = @_;
-my @symbols=();
+my @children=();
 my $tobj=tagObj($xpath);
 foreach my $symbol ($tobj->find_tag($tag)){
-push(@symbols,$symbol->text)}
-return @symbols}
+push(@children,$symbol->text)}
+return @children}
 
 sub arrays_equal {
     my ($a, $b) = @_;
@@ -51,7 +51,7 @@ arrays_equal(\@a2,\@a4) && die "test AE4 failed!";
 arrays_equal(\@a1,\@a5) || die "test AE5 failed!";
 arrays_equal(\@a1,\@a6) && die "test AE6 failed!";
 
-my @symbols = manySymbols('/html/body/p[3]','span');
+my @symbols = allChildren('/html/body/p[3]','span');
 my @expected = (-300,-100,0,200,400);
 arrays_equal(\@symbols, \@expected) || die "test A1 failed!";
 
@@ -60,23 +60,23 @@ $firefox->find('/html/body/p[4]')->click();
 push(@expected, $newMember);
 
 @expected = sort {$a <=> $b} @expected;
-@symbols = manySymbols('/html/body/p[3]','span');
+@symbols = allChildren('/html/body/p[3]','span');
 arrays_equal(\@symbols, \@expected) || die "test A2 failed!";
 
 # replacing array with random entries:
 $firefox->find('/html/body/button[1]')->click();
-@expected = manySymbols('/html/body/p[3]','span');
+@expected = allChildren('/html/body/p[3]','span');
 $newMember=tagObj('/html/body/p[4]/span')->text;
 $firefox->find('/html/body/p[4]')->click();
 push(@expected, $newMember);
 @expected = sort {$a <=> $b} @expected;
-@symbols  = manySymbols('/html/body/p[3]','span');
+@symbols  = allChildren('/html/body/p[3]','span');
 arrays_equal(\@symbols, \@expected) || die "test A3 failed!";
 
 # switching the sorting method
 $firefox->find('/html/body/button[2]')->click();
 @expected = sort {abs($a) <=> abs($b)} @expected;
-@symbols  = manySymbols('/html/body/p[3]','span');
+@symbols  = allChildren('/html/body/p[3]','span');
 arrays_equal(\@symbols, \@expected) || die "test A4 failed!";
 
 ############ sorting domain zones
