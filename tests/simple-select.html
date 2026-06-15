@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <title>Simple select tag</title>
+  <body>
+<h1>Simple select tag</h1>
+
+<article>
+  <p>Choose a drink: <select db="forEach:drinkOptions:text,value:chosenDrink"><option db="text:drinkName"></option></select></p>
+  <p>Then <button onclick="addDrink()">add another option</button> specified here: <input db="value:newDrink">.</p>
+</article>
+
+<script src="file:///tmp/DB/DB.js"></script>
+<script>
+var  drinkOptions=new DB.observable([],{type:'oarray',value:["tea","coffee","water"].map(function(x){return {drinkName:x}})}),
+     chosenDrink =new DB.observable([],{type:'str',value:(drinkOptions().find(x=>x.drinkName=='coffee') || drinkOptions()[0]).drinkName}),
+     newDrink    =new DB.observable([],{type:'str',value:"lemonade"});
+
+ function addDrink(){
+     let nDrink=newDrink().split(' ')[0];
+     if(nDrink){
+	 console.debug(" adding new drink= "+ nDrink);
+	 drinkOptions.push({drinkName:nDrink})}};
+
+ DB.scanHTML();
+</script>
+  </body>
+</html>

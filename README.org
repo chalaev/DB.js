@@ -3,17 +3,33 @@
 #+AUTHOR: Oleg Shalaev
 #+EMAIL:  oleg@chalaev.com
 
-A tiny (5.8K) MVVM framework.
+A tiny (6K) MVVM JavaScript library.
 
-See partial documentation on http://db.leanws.com
+See the documentation on http://db.chalaev.com
 
-* Testing
+* Quick testing
 For testing, one needs =firefox= and =marionette= (=libfirefox-marionette-perl= package on Debian):
 #+begin_src shell
 make -f test.mk
 #+end_src
+Every =tests/*.pl= file is a separate test. It opens a web page in Firefox.
+The web pages =tests/*.html= use =DB.js= for rendering.
 
 If marionette library reports errors, patch it:
 #+begin_src shell
 patch /usr/share/perl5/Firefox/Marionette.pm marionette.diff
 #+end_src
+
+* Visual testing
+=firefox= windows opened by the tests are invisible by default.
+This is fast, convenient, and might even work in text-only mode on remote server.
+
+If tests fail, one can investigate by updating =perl= code as follows:
+#+begin_src shell
+sed -i 's/:Marionette->new(sleep_time_in_ms => 100)/:Marionette->new(sleep_time_in_ms => 100,visible => 1)/' tests/*.pl
+#+end_src
+After that,  =firefox= windows created by
+#+begin_src shell
+make -f test.mk
+#+end_src
+become visible.
