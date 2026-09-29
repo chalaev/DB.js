@@ -8,6 +8,7 @@
 <article>
   <p>Choose a drink: <select db="forEach:drinkOptions:text,value:chosenDrink"><option db="text:drinkName"></option></select></p>
   <p>Then <button onclick="addDrink()">add another option</button> specified here: <input db="value:newDrink">.</p>
+  <p>The selection (select value) must not change when we add another option.</p>
 </article>
 
 <script src="file:///tmp/DB/DB.js"></script>

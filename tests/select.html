@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>array of select tags controlled by textarea</title>
+      <meta name="author" content="Oleg Shalaev">
+      <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0">
+      <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+  <body>
+    <noscript><div style="background-color:rgb(248, 240, 169);">You need to enable JavaScript to run this web page.</div>  </noscript>
+    <h1>Array of select tags controlled by textarea</h1>
+    <p>Press F12 to see the code. See <a href="http://db.chalaev.com/select">more explanations here.</a></p>
+
+    <article>
+      <h2>Dynamic choices</h2>
+      <p>The following (select) input element has at least two &quot;permanent&quot; choices: &quot;3-perm&quot; and &quot;7-perm&quot;.
+	Options are unique and are sorted alphabetically:</p>
+      <select style="width:15ex"  db="forEach:selectOptions:text,value:currentChoice"> <option db="text:valueOf"></option></select>
+      <p>Using the textarea below, one can add &quot;temporary&quot; options:</p>
+	<textarea style="width:50ex;height:10ex" db="value:tempChoices"></textarea>
+	<p>It is important that the previous choice is not reset when (after) the list of options is updated.</p>
+    </article>
+  </body>
+
+  <script src="file:///tmp/DB/DB.js"></script>
+
+  <script>
+   var permanentChoices=["3-perm","7-perm"],
+       tempChoicesInitValue=["1-temp","4-temp","6-temp","9-temp"],
+       tempChoices,selectOptions,currentChoice;
+
+   function onLoad(){
+       tempChoices=new DB.observable([],{
+	   value:tempChoicesInitValue.sort().join(' ').trim(),// ← initial value on page load
+	   write:function(oldValue,inputExtDNlist){
+	       let optList=inputExtDNlist.split(/[ ,\r\n]/); // only ASCII symbols allowed
+	       return [...new Set(optList)].sort().join(' ').trim()}});
+
+       selectOptions=new DB.observable([tempChoices],{type:'oarray',
+compute:()=>(permanentChoices.join(' ') + ' ' + tempChoices()).trim().split(' ').sort()});
+
+       currentChoice=new DB.observable([],{value:permanentChoices[0]});
+
+       DB.scanHTML()}
+
+   onLoad();
+  </script>
+</html>
