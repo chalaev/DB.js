@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="5em" height="5em" viewBox="0 0 400 400" style="width:400px;height:400px" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <circle id="iris"  r="16" cy="155" style="fill:#38bdf8" />
+    <circle id="pupil" r="6"  cy="155" style="fill:white" />
+    <g id="eye">
+      <use href="#iris"  />
+      <use href="#pupil" />
+    </g>
+    <rect id="ear" width="20" height="40" rx="5" y="155" style="fill:#4a5568" />
+  </defs>
+  <g transform="matrix(1,0,0,1.16,0,2.93)">
+    <rect width="14" height="35" rx="4" x="193" y="70" />
+    <circle r="14" cx="200" cy="65" style="fill:#e2e8f0;stroke:#2d3748;stroke-width:4" />
+    <circle r="6"  cx="200" cy="65" style="fill:#a0aec0"/>
+    <use href="#ear" x="90" />
+    <use href="#ear" x="290" />
+    <rect width="190" height="150" rx="28" x="105" y="100" style="stroke:#1a202c;stroke-width:6" />
+    <rect width="150" height="80" rx="16" x="125" y="120" style="fill:#0f172a" />
+    <use href="#eye" x="165" />
+    <use href="#eye" x="235" />
+    <path d="m 135,220 h 20 l 10,12 h 70 l 10,-12 h 20" style="fill:none;stroke:#64748b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round" />
+    <circle r="4" cx="135" cy="220" style="fill:#64748b" />
+    <circle r="4" cx="265" cy="220" style="fill:#64748b" />
+    <path d="m 175,185 c 16.66667,-4.66667 33.33333,-4.66667 50,0" style="fill:none;stroke:#38bdf8;stroke-width:4;stroke-linecap:round" />
+    <rect width="80" height="25" rx="4" x="160" y="250" style="fill:#1a202c" />
+    <line x1="180" y1="250" x2="180" y2="275" style="stroke:#4a5568;stroke-width:4" />
+    <line x1="200" y1="250" x2="200" y2="275" style="stroke:#4a5568;stroke-width:4" />
+    <line x1="220" y1="250" x2="220" y2="275" style="stroke:#4a5568;stroke-width:4" />
+  </g>
+  <path d="M160 0 A 160 160 0 0 1 -160 0 A 160 160 0 0 1 5.235 -159.9 A 160 160 0 0 1 160 0 Z"
+style="stroke-width:36;fill:none;stroke:#e53e3e;transform:matrix(1,0,0,1,200,200)" />
+  <line x1="96.366" y1="84.977" x2="306.48" y2="305.06"
+     style="fill:#000000;stroke:#e53e3e;stroke-width:33.9537;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;marker-start:none;marker-mid:none;marker-end:none"/>
+  <g transform="matrix(1,0,0,1.676,-4,-217.2)" style="fill:green;stroke-width:19.688;fill-opacity:1;transform:matrix(1,0,0,1.676,-4,-217.2);translate:none;scale:none;rotate:none;transform-origin:none;transform-box:none">
+    <path id="text-path" d="M80 325 C160 361.67 240 361.67 320 325" style="fill:none;d:M80 325 C160 361.67 240 361.67 320 325" />
+    <text xml:space="preserve" font-size="24"
+	  font-weight="900" text-anchor="middle"
+	  style="fill:white;font-size:24px;text-anchor:middle;baseline-shift:baseline">
+      <textPath href="#text-path"  startOffset="131.817">100% HUMAN CODE</textPath>
+    </text>
+  </g>
+</svg>
+
+

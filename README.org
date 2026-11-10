@@ -3,6 +3,8 @@
 #+AUTHOR: Oleg Shalaev
 #+EMAIL:  oleg@chalaev.com
 
+#+html: <img src="no-AI.svg" width="100" />
+
 A tiny (6K) MVVM JavaScript library.
 
 See the documentation on http://db.chalaev.com

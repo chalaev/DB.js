@@ -32,7 +32,7 @@
        tempChoices=new DB.observable([],{
 	   value:tempChoicesInitValue.sort().join(' ').trim(),// ← initial value on page load
 	   write:function(oldValue,inputExtDNlist){
-	       let optList=inputExtDNlist.split(/[ ,\r\n]/); // only ASCII symbols allowed
+	       let optList=inputExtDNlist.split(/[ ,\r\n]/);
 	       return [...new Set(optList)].sort().join(' ').trim()}});
 
        selectOptions=new DB.observable([tempChoices],{type:'oarray',
